@@ -21,7 +21,7 @@ int nombre_feuille, taille_du_text, taille_du_binaire;
 struct noeud* arbre_huffman[LONGUEUR_ASCII];
 struct noeud *alphabet[256];
 int tableau_occurence[LONGUEUR_ASCII] = {0};
-char nom_fichier[30]= "texte.txt";
+char nom_fichier[30];
 FILE *fichier = NULL;
 
 #endif
