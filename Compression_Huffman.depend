@@ -1,0 +1,18 @@
+# depslib dependency file v1.0
+1513627410 source:c:\users\frukundo\desktop\to_send\compression_huffman\main.c
+	<stdio.h>
+	<stdlib.h>
+
+1513627996 source:c:\users\frukundo\desktop\to_send\compression_huffman\fonction.c
+	<stdio.h>
+	<stdlib.h>
+	"variables.h"
+	"fonction.h"
+
+1513627154 c:\users\frukundo\desktop\to_send\compression_huffman\variables.h
+
+1513627555 c:\users\frukundo\desktop\to_send\compression_huffman\fonction.h
+	"variables.h"
+
+1512457017 source:c:\users\frukundo\desktop\to_send\compression_huffman\outil.c
+
