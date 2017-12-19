@@ -16,3 +16,18 @@
 
 1512457017 source:c:\users\frukundo\desktop\to_send\compression_huffman\outil.c
 
+1513660818 source:c:\users\frukundo\downloads\today_huffman\_kk\fonction.c
+	<stdio.h>
+	<stdlib.h>
+	"variables.h"
+	"fonction.h"
+
+1513660159 c:\users\frukundo\downloads\today_huffman\_kk\variables.h
+
+1513658307 c:\users\frukundo\downloads\today_huffman\_kk\fonction.h
+	"variables.h"
+
+1513658307 source:c:\users\frukundo\downloads\today_huffman\_kk\main.c
+	<stdio.h>
+	<stdlib.h>
+

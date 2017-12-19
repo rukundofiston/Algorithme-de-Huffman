@@ -40,10 +40,10 @@ void menu(){
         printf("\n  ********************************************************\n");
         printf("\n  * (1): Donner le nom du fichier                        *\n");
         printf("\n  * (2): Tableau des occurences                          *\n");
-        printf("\n  * (3): Compression + Taux de compression               *\n");
-        printf("\n  * (6): Afficher l'arbre de Huffman                     *\n");
+        printf("\n  * (3): Compression + Taux de compression               *\n");        
         printf("\n  * (4): Afficher le contenu du fichier                  *\n");
         printf("\n  * (5): Décompression                                   *\n");
+        printf("\n  * (6): Afficher l'arbre de Huffman                     *\n");
         printf("\n  * (0): Quitter                                         *\n");
         printf("\n  ********************************************************\n");
 
@@ -91,20 +91,11 @@ void menu(){
 
                 printf("\n\n********* DEBUT DE COMPRESSION *****************\n");
                 compression(nom_fichier);
-                //free(arbre_huffman);
-                //printf("Taille_du_binaire %d et taille_du_text %d ", taille_du_binaire, taille_du_text);
+                free(arbre_huffman);
                 double taux_compression = taille_du_binaire/(taille_du_text*8.0);
                 printf("Taux de compression est: %f\n\n", taux_compression);
                 printf("\n************FIN DE COMPRESSION ******************\n\n");
-                break;
-
-            case 6:
-                i=0;
-                while (arbre_huffman[i] == NULL && i < LONGUEUR_ASCII) i++;
-                //printf("%c:%d",arbre_huffman[i]->c, arbre_huffman[i]->occurence);
-                //afficherHuffman(arbre_huffman[i],0);
-                afficherHuffman(arbre_huffman[i],0);
-                break;
+                break;            
             case 4:
                 //Afficher le Contenu apres la compression
                 lire_contenu(nom_fichier);
@@ -117,6 +108,12 @@ void menu(){
                 printf("\n************FIN DE DECOMPRESSION ******************\n");
                 break;
 
+            case 6:
+                i=0;
+                while (arbre_huffman[i] == NULL && i < LONGUEUR_ASCII) i++;
+                afficherHuffman(arbre_huffman[i],0);
+                break;
+            
             case 0:
                 //Fonction clear screen
                 system("cls");
@@ -312,18 +309,15 @@ void compression(char *nom_fichier){
         exit(1);
 	}
 
-    printf("Dans lecture binaire\n");
 	i=0;
 	taille_du_binaire = 0;
     while(i<taille_du_text && contenu[i] !=NULL){
-        caract = contenu[i];
-        printf("caract a traite %c à l'indice %d \n", caract, i);
+        caract = contenu[i];        
         /*Pour chaque caractère, on écrit sont code dans le fichier et
         on l'affiche à l'écran avec la fonction affichage_code*/
         fprint_code(binaires, alphabet[caract]->bits, alphabet[caract]->code);
         //Compteur de la taille des bits ecrit dans le fichier
-        taille_du_binaire = taille_du_binaire + alphabet[caract]->bits;
-        //printf("Compression %c: ", caract);
+        taille_du_binaire = taille_du_binaire + alphabet[caract]->bits;        
         //affichage_code(alphabet[caract]->bits, alphabet[caract]->code);
         i++;
     }
@@ -341,19 +335,12 @@ void compression(char *nom_fichier){
     }
     fclose(binaires);
 
-    /*printf("\nContenuuuuuu ************************\n");
-    for(i=0; i<taille_du_binaire; i++){
-        printf("%c", contenu[i]);
-    }
-    exit(1);*/
-
     fichier = fopen(nom_fichier, "w");
     if (fichier == NULL){           // test si le fichier existe
         perror("Erreur d'ouverture fichier");
         exit(1);
     }
 
-    //printf("%d\n", nombre_feuille);
     //Ecrire dans le fichier compressé la longueur des binaires
     int marge = 8 - (taille_du_binaire%8);
     fwrite(&marge,sizeof(char),1,fichier);
@@ -376,8 +363,6 @@ void compression(char *nom_fichier){
             compteur++;
             if(i == 7){
                 octet = atoi(bits);
-                printf("Notre octetttt %d\n", octet);
-                //octet = convertirEnDecimale(octet);
                 fwrite(&octet, sizeof(int), 1, fichier);
                 i=0;
             }
@@ -406,13 +391,8 @@ void decompression(char *nom_fichier){
     printf("La marge avant decompression: %d\n", marge);
     printf("Le nombre de feuille avant decompression: %d\n",nombre_feuille);
 
-    //Lecture de l'entete
     int code, bits, compteur=0;
-    //nombre_feuille = _nombre_feuille;
     while(compteur < nombre_feuille){
-        /*fwrite(&alphabet[i]->c, sizeof(char), 1, fichier);
-        fwrite(&alphabet[i]->code, sizeof(int), 1, fichier);
-        fwrite(&alphabet[i]->bits,  sizeof(char), 1, fichier);*/
         fread(&caract, sizeof(char),1,fichier);
         fread(&code, sizeof(int),1,fichier);
         fread(&buffer, sizeof(char),1,fichier);
@@ -422,13 +402,10 @@ void decompression(char *nom_fichier){
         alphabet[caract]->bits = bits;
         alphabet[caract]->code = code;
         alphabet[caract]->gauche = NULL;
-        alphabet[caract]->droite = NULL;
-        printf("Lecture caract %c:%d:%d\n ", caract, alphabet[caract]->code, bits);
+        alphabet[caract]->droite = NULL;        
         compteur++;
 	}
-    printf("FIN Decodage ENTETE\n");
-    printf("Decodage contenu\n");
-
+    
     FILE *binaires = fopen("binaires.txt","w");
     if(binaires == NULL){
         perror("Erreur d'ouverture du fichier: ");
@@ -453,9 +430,7 @@ void decompression(char *nom_fichier){
     }
     fclose(binaires);
     fclose(fichier);
-    printf("Rappel Marge %d Taille_du_binaire %d et taille_du_binaire \n", marge, taille_du_binaire, sizeof(contenu));
-    //printf("Notre contenu: %s\n", contenu );
-
+    
     fichier = fopen(nom_fichier,"w");
     if(fichier == NULL){
         perror("Erreur d'ouverture du fichier: ");
@@ -463,8 +438,7 @@ void decompression(char *nom_fichier){
     }
     int nbre_bits=1;
     code=0;
-    for (i=marge; i<taille_du_binaire;i++){
-        printf("%c", contenu[i]);
+    for (i=marge; i<taille_du_binaire;i++){        
         if(contenu[i] =='0'){
             code = code*10 + 0;
         }
@@ -476,8 +450,7 @@ void decompression(char *nom_fichier){
             //On decode les caractères au fil et à mesur qu'on avance dans les binaires
             if(alphabet[j] != NULL && alphabet[j]->bits == nbre_bits && alphabet[j]->code == code){
                 //Le caractère décode est enregistre dans le fichier
-                fprintf(fichier,"%c",alphabet[j]->c);
-                printf("Notre code: %d", code);
+                fprintf(fichier,"%c",alphabet[j]->c);                
                 nbre_bits = 0;
                 code = 0;
             }
@@ -487,95 +460,7 @@ void decompression(char *nom_fichier){
     fclose(fichier);
     free(fichier);
     free(alphabet);
-    //exit(1);
-   // printf("Lecture binaires en lecture 2222\n");
-    //printf("\n\nLe contenu \n*****************\n\n");
-    /*compteur=0;
-    while((caract=fgetc(binaires)) != EOF){
-        compteur++;*/
-        /*if(caract =='0'){
-            code = code*10 + 0;
-        }
-        else{
-            code = code*10 + 1;
-        }
-
-        for(j=0; j<LONGUEUR_ASCII; j++){
-            //On decode les caractères au fil et à mesur qu'on avance dans les binaires
-            if(alphabet[j] != NULL && alphabet[j]->bits == nbre_bits && alphabet[j]->code == code){
-                contenu[i] = alphabet[j]->c; //Le caractère décode est stocké dans contenu[]
-                printf("Decodage %c et indice %d\n",contenu[i], i);
-                i++; //Compter les codes ASCII decoder
-                nbre_bits = 0;
-                code = 0;
-            }
-        }
-        nbre_bits++;*/
-    //}
-    /*printf("Nombre des bits lu: %d\n", compteur);
-    printf("Fin Decodage\n");*/
     fclose(binaires);
-    /*fclose(fichier);*/
-
-    /*fichier = fopen(nom_fichier,"w");
-    if (fichier == NULL){
-        perror("Erreur d'ouverture fichier: ");
-        exit(1);
-    }*/
-
-    /*printf("Fin Decodage 22\n");
-    for(j = 0; j<i; j++){
-        fprintf(fichier,"%c",contenu[j]);
-    }*/
-
-    //Lecture du code hexadecimale et le convertir en binaire
-    /*binaires = fopen("binaires.txt","w");
-    if (binaires == NULL){
-        perror("Erreur d'ouverture fichier: ");
-        exit(1);
-    }*/
-    /*printf("Lecture contenu taille_du_binaire %d\n", taille_du_binaire);
-    int aux, aux_taille_du_binaire = (taille_du_binaire/8);
-    int i;
-    for (i = 0; i < aux_taille_du_binaire; i++){
-        aux=fgetc(fichier);
-        convertirEnBinaire2(binaires, aux, 8);
-    }*/
-    /*int rest = taille_du_binaire%8;
-    aux=fgetc(fichier);
-    printf("Reste de la div %d et taille_du_binaire %d\n", rest, taille_du_binaire);
-    convertirEnBinaire2(binaires, aux, rest);*/
-
-    /*while((aux=fgetc(fichier)) != EOF){
-        if(aux>=0){
-            if(taille_du_binaire >= 8){
-                printf("Lu Hex %u\n", aux);
-                convertirEnBinaire2(binaires, aux, 8);
-            }
-            else{
-                //printf("Dans le dernier octet octet %d \n", taille_du_binaire);
-                convertirEnBinaire2(binaires, aux, taille_du_binaire);
-            }
-            //taille_du_binaire = taille_du_binaire-8;
-        }
-    }*/
-
-    /*printf("Convertir en binaires\n");*/
-    //Lire le dernier caractère et sa taille en binaire vaut taille_du_binaire%8
-    /*caract = fgetc(fichier);
-    convertirEnBinaire(binaires, caract, (taille_du_binaire%8));*/
-
-
-    /*binaires = fopen("binaires.txt","r");
-    if (binaires == NULL){
-        perror("Erreur d'ouverture fichier: ");
-        exit(1);
-    }*/
-
-    //printf("Lecture binaires en lecture\n");
-    //LONGUEUR_MAX: Longueur max supposé des caractères
-    //char *contenu = malloc(LONGUEUR_MAX*sizeof(char));
-    //char *contenu = (char*)malloc (LONGUEUR_MAX*sizeof(char));
 }
 
 void creer_entete(FILE *fichier){
@@ -636,61 +521,3 @@ void afficherHuffman(struct noeud *sommet,int niveau){
 	printf("%d \n",sommet->occurence);
 	afficherHuffman(sommet->gauche, niveau+1);
 }
-
-void convertirEnBinaire2(FILE* fichier, int nombre, int taille){
-    int binaire = 0, i=1;
-    int resteDivision, nbre_digit=0;
-    while(nombre != 0) {
-        resteDivision = nombre%2;
-        nombre = nombre/2;
-        binaire = binaire + (resteDivision*i);
-        i = i*10;;
-        nbre_digit++;
-    }
-
-    for(i=0; i<(taille-nbre_digit); i++){
-        fprintf(fichier,"0");
-        //printf("0");
-    }
-
-    fprintf(fichier,"%d",binaire);
-    //printf("%d\n",binaire);
-}
-
-int convertirEnDecimale(long binaire){
-    int aux, decimale = 0, base = 1, resteDivision;
-    aux = binaire;
-    while (binaire > 0){
-        resteDivision = binaire % 10;
-        decimale = decimale + resteDivision * base;
-        binaire = binaire / 10 ;
-        base = base * 2;
-    }
-    return decimale;
-}
-
-/*int convertirEnBinaire(long decimale){
-    long binaire = 0, i=1;
-    int resteDivision, nbre_digit=0;
-    while(decimale != 0) {
-        resteDivision = decimale%2;
-        decimale = decimale/2;
-        binaire = binaire + (resteDivision*i);
-        i = i*10;;
-        nbre_digit++;
-    }
-    return binaire;
-}*/
-
-/*void write_taille_binaire(FILE *fichier){
-    int aux = taille_du_binaire;
-    int r = aux%255;
-    aux = aux - r;
-    int nbre1 = aux/255;
-    int nbre2 = 255;
-    int nbre3 = r;
-    fwrite(&nbre1, sizeof(unsigned char), 1, fichier);
-    fwrite(&nbre2, sizeof(unsigned char), 1, fichier);
-    fwrite(&nbre3, sizeof(unsigned char), 1, fichier);
-}
-*/
